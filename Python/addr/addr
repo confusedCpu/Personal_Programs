@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-# addr.py
+#!/usr/bin/python addr.py
 # This is a simple application to keep track of contact information from the terminal
 
 ''' TODO
@@ -12,22 +11,43 @@
   develop help function to explain cli syntax
   debug *
   move cli args handling to a seperate function
+  rework open_book
 
 '''
-import copy, os, pprint, sys
+import copy, os, pprint, re, sys
 
 def build_contact(line): # Reads in data from a csv and returns dictionaries
   # templete for contact
-  # contact = {Name: '', Cell Phone: '', Home Phone: '', Work Phone: '', Email: ''}
+  # {Name: '', Cell Phone: '', Home Phone: '', Work Phone: '', Work Ext: '', Email: ''}
   copy = line.strip()
-  return dict(copy)
-  
+  contact = {}
+  name_regex = re.compile(r'[A-Z]\w*')
+  cell_regex = re.compile(r'(?<=cellp: )(\d{3}|\(\d{3}\))(-|\.|x|\s)\d{3}(-|\.|x|\s)\d{4}')
+
+  if 'name' in copy:    #check if a name was provided
+    contact['name'] = name_regex.search(copy) 
+  if 'cellp' in copy:    #check if a name was provided
+    contact['cellp'] = cell_regex.search(copy)
+  if 'homep' in copy:    #check if a name was provided
+    homep_regex = re.compile(r'(?<=homep: )((\d{3}|\(\d{3}\))(-|\.|x|\s)\d{3}(-|\.|x|\s)\d{4}')
+    contact['homep'] = homep_regex.search(copy)
+  if 'workp' in copy:    #check if a name was provided
+    workp_regex = re.compile(r'(?<=workp: )(\d{3}|\(\d{3}\))(-|\.|x|\s)\d{3}(-|\.|x|\s)\d{4}(x\d{1,4})')
+    contact['workp'] = workp_regex.search(copy)
+  if 'emailw' in copy:    #check if a name was provided
+    emailw_regex = re.compile(r'(?<=emailw:)\w*@\w*\.[a-zA-Z]*')
+    contact['emailw'] = emailp_regex.search(copy)
+  if 'emailp' in copy:    #check if a name was provided
+    emailp_regex = re.compile(r'(?<=email:)\w*@\w*\.[a-zA-Z]*')
+    contact['emailp'] = emailp_regex.search(copy)
+
+  return contact
 
 #def delete_contact():
     
 def get_help(): # prints helpfull information on how to use the program
-  print(
-  '''This is a simple application to keep track of contact information from the terminal
+  print('''
+     This is a simple application to keep track of contact information from the terminal
         
            format:
              addr [arguments/function] [arguments]
@@ -39,49 +59,29 @@ def get_help(): # prints helpfull information on how to use the program
 
            arguments:
              name         - first name | last name | first + last
-             phone number - xxx-xxxx | xxx-xxx-xxxx
+             phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX
              email        - account@domain.com
              { }          - new contact information 
              *            - selects all contacts
 
            contact keys:
-              name  - first and last name
-              cellp - cell phone number
-              homep - home phone number
-              workp - work phone number
-              email - email address
-              address - physical address
+              name    - first and last name
+              cellp   - cell phone number
+              homep   - home phone number
+              workp   - work phone number
+              workx   - work phone extention
+              email   - email address
 
            examples:
              addr update 'John Doe' - updates an existing contact named 'John Doe'
              addr add {name: 'John Doe', cellp: '555-555-5555', email: 'user@domain.com'}
         ''')
   sys.exit()
-# DELETE BELLOW?
-'''def menu(contacts[]): # print the list of available actions and handle cli 
-  exit = False
-  contacts = 
-  while exit != True:
-    print('1. Print all \n2. Search \n3. New \n4. Update \n5.Delete \n6. Quit \n\
-           ----------------------------------------------------------\n\
-            What would you like to do (enter action number): ')
-    response = input()
-    if response == '1': print_book(); continue
-    elif response == '2': search_book(); continue
-    elif response == '3': add_contact(); continue
-    elif response == '4': update_contact(); continue
-    elif response == '5': delete_contact(); continue
-    elif response == '6': exit = True; continue
-    else: print('That is not a valid response. Note the numbers next to the actions.\n\n')
-
-  exit, response = None
-  del exit, response
-'''
 
 def open_book(book_path): # opens/creates the contact book and loads it into the contacts list
   contacts = []
   try:
-    if not os.path.isfile(book_path):
+    if not os.path.exitst(book_path):
       print('File does not exist. Do you want to create a new contacts file?')
       response = input().lower().strip()
       if response == 'y':
@@ -108,8 +108,9 @@ def open_book(book_path): # opens/creates the contact book and loads it into the
       print('You have: ' + contacts.len() + ' contacts.')
       return contacts
 
-#def print_book([]):
-#  contacts = copy.deepcopy(contact_list)
+def print_book(contacts):
+  for i in len(contacts):
+    
 #def search_book(contacts_list): 
   '''.isalpha(query.strip()) = Name search
      .isdecimal(query.strip(-()) = Phone search
@@ -119,21 +120,22 @@ def open_book(book_path): # opens/creates the contact book and loads it into the
 #def update_contact():
 
 def main():
-  default_path = os.path.join('$HOME', '.addr_book')
-  '''len = 0 -> bring up menu
-     len = 1 -> identify (path, function, or error)
-     len = 2 -> identify function and pass the second item as param
-     len = 2... -> parameters to pass to the next function
-  '''
-  if len(sys.argv) < 2: 
+  if len(sys.argv) < 2 or len(sys.argv) > 3: 
     get_help()
-    sys.exit()
-''' elif args.len() == 1:
-    if os.path.isabs(args[0]) or os.path.isrel(args[0]):
-      menu(open_book(args[0]))
-    else:
-      get_help(args[0])
-  elif args.len() == 2:
-  '''
+
+  DEFAULT_PATH = os.path.expanduser('~') + '/.addr_book'
+  DEFAULT_BACUP_PATH = os.path.expanduser('~') + '/.addr_book_backup'
+
+  if sys.argv[1] == 'add':
+    search_book(sys.argv[2])
+  elif sys.argv[1] == 'delete':
+    delete_contact(sys.argv[2])
+  elif sys.argv[1] == 'update':
+    update_contact(sys.argv[2])
+  else:
+    search_contact(sys.argv[2])
+
+
+# Statement to call the main function
 if __name__ == '__main__':
   main()
