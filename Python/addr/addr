@@ -20,6 +20,27 @@ import sys
 DEFAULT_PATH = os.path.join(os.path.expanduser('~'),  '.addr_book')
 DEFAULT_BACUP_PATH = os.path.join(os.path.expanduser('~'), '.addr_book_backup')
 
+class Contact:
+  def __init__(self, name='Unkown', homep='Unkown', cellp='Unkown', workp='Unkown',
+               emailp='Unkown', emailw='Unkown'):
+    self.name = name
+    self.homep = homep
+    self.cellp = cellp
+    self.workp = workp
+    self.emailp = emailp
+    self.emailw = emailw
+
+  def print(self):
+    print('''{0}
+                 phone: 
+                    (h) {1}
+                    (c) {2}
+                    (w) {3}
+                 email:
+                    (p) {4}
+                    (w) {5}\n'''.format(self.name, self.homep, self.cellp, self.workp,
+                                     self.emailp, self.eamilw))
+
 def build_contact(line): 
 # recieves a line uses regex to build key value pairs and return a dictionary with those values
   copy = line
@@ -29,16 +50,45 @@ def build_contact(line):
                                 |(?<=cellp:)[0-9\.\-\(\)x]*    #contact cell phone
                                 |(?<=workp:)[0-9\.\-\(\)x]*    #contact work phone
                                 |(?<=emailp:)[a-zA-Z0-9\@\._]* #contact personal email
-                                |(?<=emailw:)[a-zA-Z0-9\@\.]*  #contact work email
+                                |(?<=emailw:)[a-zA-Z0-9\@\._]* #contact work email
                                 )''', flags=re.X)
   keys_regex = re.compile(r'(name|cellp|workp|homep|emailp|emailw)')
 
   values = re.findall(values_regex, copy)
   return dict(zip(keys, values))
 
-def handle_args(ARGS):
+def get_help():
+  print('''This is a simple application to keep track of contact information from the terminal
 
-  
+           format:
+             addr [arguments/function] [arguments]
+           
+           funtions:
+             add    - create new contact 
+             delete - delete an existing contact
+             search - search and print saved contact information
+             update - update an existing contact
+                                                                                                                       
+          arguments (multi-word args must be passed in quotes):
+            name         - first name | last name | first + last
+            phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX               
+            email        - account@domain.com
+            {}          - new contact information
+            *            - selects all contacts
+
+          contact keys (all string values):
+            name    - first and last name
+            cellp   - cell phone number
+            homep   - home phone number
+            workp   - work phone number
+            workx   - work phone extention
+            email   - email address
+
+          examples:
+            addr update 'John Doe' 'homep:222-222-2222'
+                 - updates an existing contact named 'John Doe'
+            addr add {name: 'John Doe', cellp: '555-555-5555', email: 'user@domain.com'}''')
+  sys.exit()
 
 def open_book():
   if not os.path.isfile(path):
@@ -54,8 +104,8 @@ def open_book():
   finally:
      return contacts
 
-def print_book():
-  [pprint.pprint(j) for i,j in enumerate(contacts)]
+def print_book(contacts):
+  [print(j) for i,j in enumerate(contacts)]
    
 #def search_book(contacts_list): 
   #.isalpha(query.strip()) = Name search
@@ -65,7 +115,7 @@ def print_book():
 #def update_contact():
 
 def main():
-  parser = argparse.ArgumentParser(description='Terminal application to keep track of a contact information')
+#  parser = argparse.ArgumentParser(description='Terminal application to keep track of a contact information')
 #parser.add_argument('--add', '-a', type=str, default=None, 
 #                      help='''Add a new contact to the addr_book file formated as a python dictionary
 #                               Must provide at least the name key''')
@@ -75,14 +125,28 @@ def main():
 #                       help='Prints contact information for one or all of the contacts')
 #parser.add_argument('--update', '-u', type=str, default=None,
 #                       help='Updates an existing contact')
-  parser.add_argument('--operation', '-o',
-                       type=str, default='--help',
-                       choices=['add', 'delete', 'print', 'update'],
-                       help='The operation you would like to perform')
-  args = parser.parse_args()
-  print(type(args))
+#  parser.add_argument('--operation', '-o',
+#                       type=str, default='--help', nargs=2,
+#                       choices=['add', 'delete', 'print', 'update'],
+#                       help='The operation you would like to perform')
+#  parser.add_argument('--path', '-p',
+#                       type=str, default=DEFAULT_PATH,
+#                       help='The save file of the address book you would like to use')
+#  args = parser.parse_args()
+  print(type(sys.argv[0]))
+  print(sys.argv[0])
 
-  handle_args(args)
+  if argv[1] == 'add':
+    with open(DEFAULT_PATH, 'w+') as f:
+      f.write(build_contact(argv[2]))
+    del f
+    sys.exit()
+  if argv[1] == 'delete':
+
+  if argv[1] == 'update':
+
+  if argv[1] == 'delete':
+
 
 
 # Statement to call the main function
