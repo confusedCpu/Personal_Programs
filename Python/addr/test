@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+
+import re, pprint, os
+
+line = '{name:Alex Martin, homep:222.222.2222, cellp:(333)-333-3333, workp:444-444-4444x555, emailp:2@gmail.com, emailw:w@gmail.com}'
+
+v_regex = re.compile(r'''(
+                        (?<=name:)[a-zA-z\s]*  #test comment
+                        |(?<=homep:)[0-9\.\-\(\)x]*
+                        |(?<=cellp:)[0-9\.\-\(\)x]*
+                        |(?<=workp:)[0-9\.\-\(\)x]*
+                        |(?<=emailp:)[a-zA-Z0-9\@\.]*
+                        |(?<=emailw:)[a-zA-Z0-9\@\.]*
+                        )''', flags=re.X)
+k_regex = re.compile(r'(name|homep|cellp|workp|emailp|emailw)')
+
+v = re.findall(v_regex, line)
+k = re.findall(k_regex, line)
+
+#print(v)
+#print('\n\nkeys:\n')
+#print(k)
+
+contacts = []
+
+    
+
+with open('./.addr_book_test') as f:
+    for i in f:
+      v = re.findall(v_regex, i)
+      k = re.findall(k_regex, i)
+      contacts.append(dict(zip(k, v)))
+      print('new contact built: {}\n'.format(i))
+    
+[print(str(j)) for i,j in enumerate(contacts)]
+print('test 1 done')
+
+for i,j in enumerate(contacts):
+    print(i, str(j))
+print('test 2 done')
+
+[pprint.pprint(j) for i,j in enumerate(contacts)]
+print('test 3 done')

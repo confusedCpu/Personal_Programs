@@ -1,139 +1,88 @@
-#!/usr/bin/python addr.py
+#!/usr/bin/python3 
+# addr.py
 # This is a simple application to keep track of contact information from the terminal
 
 ''' TODO
   develop add_contact
-  develop build_contact
   develop delete_contact
-  develop get_book
   develop search_book
   develop update_contact
   develop help function to explain cli syntax
   debug *
-  move cli args handling to a seperate function
   rework open_book
-
 '''
-import copy, os, pprint, re, sys
+import argparse
+import os
+import pprint
+import re
+import sys
 
-def build_contact(line): # Reads in data from a csv and returns dictionaries
-  # templete for contact
-  # {Name: '', Cell Phone: '', Home Phone: '', Work Phone: '', Work Ext: '', Email: ''}
-  copy = line.strip()
-  contact = {}
-  name_regex = re.compile(r'[A-Z]\w*')
-  cell_regex = re.compile(r'(?<=cellp: )(\d{3}|\(\d{3}\))(-|\.|x|\s)\d{3}(-|\.|x|\s)\d{4}')
+DEFAULT_PATH = os.path.join(os.path.expanduser('~'),  '.addr_book')
+DEFAULT_BACUP_PATH = os.path.join(os.path.expanduser('~'), '.addr_book_backup')
 
-  if 'name' in copy:    #check if a name was provided
-    contact['name'] = name_regex.search(copy) 
-  if 'cellp' in copy:    #check if a name was provided
-    contact['cellp'] = cell_regex.search(copy)
-  if 'homep' in copy:    #check if a name was provided
-    homep_regex = re.compile(r'(?<=homep: )((\d{3}|\(\d{3}\))(-|\.|x|\s)\d{3}(-|\.|x|\s)\d{4}')
-    contact['homep'] = homep_regex.search(copy)
-  if 'workp' in copy:    #check if a name was provided
-    workp_regex = re.compile(r'(?<=workp: )(\d{3}|\(\d{3}\))(-|\.|x|\s)\d{3}(-|\.|x|\s)\d{4}(x\d{1,4})')
-    contact['workp'] = workp_regex.search(copy)
-  if 'emailw' in copy:    #check if a name was provided
-    emailw_regex = re.compile(r'(?<=emailw:)\w*@\w*\.[a-zA-Z]*')
-    contact['emailw'] = emailp_regex.search(copy)
-  if 'emailp' in copy:    #check if a name was provided
-    emailp_regex = re.compile(r'(?<=email:)\w*@\w*\.[a-zA-Z]*')
-    contact['emailp'] = emailp_regex.search(copy)
+def build_contact(line): 
+# recieves a line uses regex to build key value pairs and return a dictionary with those values
+  copy = line
+  values_regex = re.compile(r'''(
+                                (?<=name:)[a-zA-Z\s]*          #contact name
+                                |(?<=homep:)[0-9\.\-\(\)x]*    #contact home phone
+                                |(?<=cellp:)[0-9\.\-\(\)x]*    #contact cell phone
+                                |(?<=workp:)[0-9\.\-\(\)x]*    #contact work phone
+                                |(?<=emailp:)[a-zA-Z0-9\@\._]* #contact personal email
+                                |(?<=emailw:)[a-zA-Z0-9\@\.]*  #contact work email
+                                )''', flags=re.X)
+  keys_regex = re.compile(r'(name|cellp|workp|homep|emailp|emailw)')
 
-  return contact
+  values = re.findall(values_regex, copy)
+  return dict(zip(keys, values))
 
-#def delete_contact():
-    
-def get_help(): # prints helpfull information on how to use the program
-  print('''
-     This is a simple application to keep track of contact information from the terminal
-        
-           format:
-             addr [arguments/function] [arguments]
+def handle_args(ARGS):
 
-           funtions:
-             add    - create new contact 
-             delete - delete an existing contact
-             update - update an existing contact
+  
 
-           arguments:
-             name         - first name | last name | first + last
-             phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX
-             email        - account@domain.com
-             { }          - new contact information 
-             *            - selects all contacts
+def open_book():
+  if not os.path.isfile(path):
+    open(DEFAULT_PATH, 'w').close() # creates an addr_book file if one does not exist
 
-           contact keys:
-              name    - first and last name
-              cellp   - cell phone number
-              homep   - home phone number
-              workp   - work phone number
-              workx   - work phone extention
-              email   - email address
-
-           examples:
-             addr update 'John Doe' - updates an existing contact named 'John Doe'
-             addr add {name: 'John Doe', cellp: '555-555-5555', email: 'user@domain.com'}
-        ''')
-  sys.exit()
-
-def open_book(book_path): # opens/creates the contact book and loads it into the contacts list
-  contacts = []
   try:
-    if not os.path.exitst(book_path):
-      print('File does not exist. Do you want to create a new contacts file?')
-      response = input().lower().strip()
-      if response == 'y':
-        file(book_path, 'w').close()
-        print(os.path.basename(book_path) + ' did not exist in ' + os.path.dirname(book_path) + \
-            ', so a new contacts file was made for you.')
-        book = open(book_path, 'r')
-      elif response == 'n':
-          print('A filk was not provided, exiting.')
-          sys.exit()
-      else:
-          print('An response was not provided, exiting.')
-          sys.exit()
-    for line in book:
-        contacts.append(build_contact(book.readline()))
+    contacts = []
+    with open(default_path) as f:
+      contacts = [build_contact(line) for line in f]
   except OSError as err1:
-      print('Error 1: There was an issue opening the file. The program will now close.')
-      sys.exit()
+     print('Could not open \'addr_book\' at the default path')
+     sys.exit()
   finally:
-      book = None
-      del book
-      book.close()
-      print('The contact book has been loaded into memory.')
-      print('You have: ' + contacts.len() + ' contacts.')
-      return contacts
+     return contacts
 
-def print_book(contacts):
-  for i in len(contacts):
-    
+def print_book():
+  [pprint.pprint(j) for i,j in enumerate(contacts)]
+   
 #def search_book(contacts_list): 
-  '''.isalpha(query.strip()) = Name search
-     .isdecimal(query.strip(-()) = Phone search
-     .isalnum(query.lower().strip()) = Email search
-  '''
+  #.isalpha(query.strip()) = Name search
+  #  .isdecimal(query.strip(-()) = Phone search
+  #  .isalnum(query.lower().strip()) = Email search
 
 #def update_contact():
 
 def main():
-  if len(sys.argv) < 2 or len(sys.argv) > 3: 
-    get_help()
+  parser = argparse.ArgumentParser(description='Terminal application to keep track of a contact information')
+#parser.add_argument('--add', '-a', type=str, default=None, 
+#                      help='''Add a new contact to the addr_book file formated as a python dictionary
+#                               Must provide at least the name key''')
+#parser.add_argument('--delete', '-d', type=str, default=None, 
+#                       help='Delete a contact from the addr_book file')
+#parser.add_argument('--print', '-p', type=str, default='*',
+#                       help='Prints contact information for one or all of the contacts')
+#parser.add_argument('--update', '-u', type=str, default=None,
+#                       help='Updates an existing contact')
+  parser.add_argument('--operation', '-o',
+                       type=str, default='--help',
+                       choices=['add', 'delete', 'print', 'update'],
+                       help='The operation you would like to perform')
+  args = parser.parse_args()
+  print(type(args))
 
-  DEFAULT_PATH = os.path.expanduser('~') + '/.addr_book'
-  DEFAULT_BACUP_PATH = os.path.expanduser('~') + '/.addr_book_backup'
-
-  if sys.argv[1] == 'add':
-    search_book(sys.argv[2])
-  elif sys.argv[1] == 'delete':
-    delete_contact(sys.argv[2])
-  elif sys.argv[1] == 'update':
-    update_contact(sys.argv[2])
-  else:
-    search_contact(sys.argv[2])
+  handle_args(args)
 
 
 # Statement to call the main function

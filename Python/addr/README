@@ -1,0 +1,30 @@
+This is a simple application to keep track of contact information from the terminal
+          
+             format:
+               addr [arguments/function] [arguments]
+  
+             funtions:
+               add    - create new contact 
+               delete - delete an existing contact
+               search - search and print saved contact information
+               update - update an existing contact
+  
+             arguments:
+               name         - first name | last name | first + last
+               phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX
+               email        - account@domain.com
+               { }          - new contact information 
+               *            - selects all contacts
+  
+             contact keys:
+                name    - first and last name
+                cellp   - cell phone number
+                homep   - home phone number
+                workp   - work phone number
+                workx   - work phone extention
+                email   - email address
+  
+             examples:
+               addr update 'John Doe' - updates an existing contact named 'John Doe'
+               addr add {name: 'John Doe', cellp: '555-555-5555', email: 'user@domain.com'}
+
