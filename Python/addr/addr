@@ -11,174 +11,183 @@
   debug *
   rework open_book
 '''
-import argparse
 import os
-import pprint
 import re
+import shutil
 import sys
 
 DEFAULT_PATH = os.path.join(os.path.expanduser('~'),  '.addr_book')
 DEFAULT_BACUP_PATH = os.path.join(os.path.expanduser('~'), '.addr_book_backup')
 
 class Contact:
-  def __init__(self, name='Unkown', homep='Unkown', cellp='Unkown', workp='Unkown',
-               emailp='Unkown', emailw='Unkown'):
-    self.name = name
-    self.homep = homep
-    self.cellp = cellp
-    self.workp = workp
-    self.emailp = emailp
-    self.emailw = emailw
+    def __init__(self, name='Unkown', homep='Unkown', cellp='Unkown', workp='Unkown',
+                 emailp='Unkown', emailw='Unkown'):
+      self.name = name
+      self.homep = homep
+      self.cellp = cellp
+      self.workp = workp
+      self.emailp = emailp
+      self.emailw = emailw
 
-  def print(self):
-    print('''{0}
-                 phone: 
-                    (h) {1}
-                    (c) {2}
-                    (w) {3}
-                 email:
-                    (p) {4}
-                    (w) {5}\n'''.format(self.name, self.homep, self.cellp, self.workp,
-                                     self.emailp, self.eamilw))
-                    
-
-def build_contact(line): 
-# recieves a line uses regex to build key value pairs and return a dictionary with those values
-#  copy = line
-#  temp_contact = Contact()
-#  values_regex = re.compile(r'''(
-#                                (?<=name:)[a-zA-Z\s]*          #contact name
-#                                |(?<=homep:)[0-9\.\-\(\)x]*    #contact home phone
-#                                |(?<=cellp:)[0-9\.\-\(\)x]*    #contact cell phone
-#                                |(?<=workp:)[0-9\.\-\(\)x]*    #contact work phone
-#                                |(?<=emailp:)[a-zA-Z0-9\@\._]* #contact personal email
-#                                |(?<=emailw:)[a-zA-Z0-9\@\._]* #contact work email
-#                                )''', flags=re.X)
-#  keys_regex = re.compile(r'(name|cellp|workp|homep|emailp|emailw)')
-
-#  values = re.findall(values_regex, copy)
+    def __itter__(self):
+       return self
   
-  copy = line
-  name = re.findall(r'(?<=name:)[a-zA-Z\s]*', line)            #contact name
-  homep = re.findall(r'(?<=homep:)[0-9\.\-\(\)x]*', line)      #contact home phone
-  cellp = re.findall(r'(?<=cellp:)[0-9\.\-\(\)x]*', line)      #contact cell phone
-  workp = re.findall(r'(?<=workp:)[0-9\.\-\(\)x]*', line)      #contact work phone
-  emailp = re.findall(r'(?<=emailp:)[a-zA-Z0-9\@\._]*', line)  #contact personal email
-  emailw = re.findall(r'(?<=emailw:)[a-zA-Z0-9\@\._]*', line)  #contact work email
-  keys_regex = re.findall(r'(name|cellp|workp|homep|emailp|emailw)', line) # identify args provided
-  contacts = Contact()
+    def print(self):
+       print('''{0}
+                   phone: 
+                      (h) {1}
+                      (c) {2}
+                      (w) {3}
+                   email:
+                      (p) {4}
+                      (w) {5}\n'''.format(self.name, self.homep, self.cellp, self.workp,
+                                       self.emailp, self.emailw))
 
-  if not name = None:
-    temp_contact.name = name
-  if homep not None:
-    temp_contact.homep = homep
-  if cellp not None:
-    temp_contact.cellp = cellp
-  if workp not None:
-    temp_contact.workp = workp
-  if emailp not None:
-    temp_contact.emailp = emailp
-  if emailw not None:
-    temp_contact.emailw = emailw
+    def print_to_file(self):
+        print('name:{}, homep:{}, cellp:{}, workp:{}, emailp:{}, emailw:{}'
+                .format(self.name, self.homep, self.cellp, self.work, self.emailp, self.emailw))
 
-  return contact
+
+
+def add_contact(contact_line):
+    pass
+  
+def build_contact(line): 
+    copy = line
+    name = re.search(r'(?<=name:)[a-zA-Z\s]*', line)            #contact name
+    homep = re.search(r'(?<=homep:)[0-9\.\-\(\)x]*', line)      #contact home phone
+    cellp = re.search(r'(?<=cellp:)[0-9\.\-\(\)x]*', line)      #contact cell phone
+    workp = re.search(r'(?<=workp:)[0-9\.\-\(\)x]*', line)      #contact work phone
+    emailp = re.search(r'(?<=emailp:)[a-zA-Z0-9\@\._]*', line)  #contact personal email
+    emailw = re.search(r'(?<=emailw:)[a-zA-Z0-9\@\._]*', line)  #contact work email
+    temp_contact = Contact()
+
+    if name is not None:
+      temp_contact.name = str(name.group(0))
+    if homep is not None:
+      temp_contact.homep = str(homep.group(0))
+    if cellp is not None:
+      temp_contact.cellp = str(cellp.group(0))
+    if workp is not None:
+      temp_contact.workp = str(workp.group(0))
+    if emailp is not None:
+      temp_contact.emailp = str(emailp.group(0))
+    if emailw is not None:
+      temp_contact.emailw = str(emailw.group(0))
+
+    return temp_contact
 
   
 
 def get_help():
-  print('''This is a simple application to keep track of contact information from the terminal
+    print('''This is a simple application to keep track of contact information from the terminal
 
-           format:
-             addr [arguments/function] [arguments]
+             format:
+               addr [arguments/function] [arguments]
            
-           funtions:
-             add    - create new contact 
-             delete - delete an existing contact
-             search - search and print saved contact information
-             update - update an existing contact
-                                                                                                                       
-          arguments (multi-word args must be passed in quotes):
-            name         - first name | last name | first + last
-            phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX               
-            email        - account@domain.com
-            {}          - new contact information
-            *            - selects all contacts
+             funtions:
+               add    - create new contact 
+               delete - delete an existing contact
+               search - search and print saved contact information
+               update - update an existing contact
+                                                                                                                         
+            arguments (multi-word args must be passed in quotes):
+              name         - first name | last name | first + last
+              phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX               
+              email        - account@domain.com
+              {}          - new contact information
+              *            - selects all contacts
 
-          contact keys (all string values):
-            name    - first and last name
-            cellp   - cell phone number
-            homep   - home phone number
-            workp   - work phone number
-            workx   - work phone extention
-            email   - email address
+            contact keys (all string values):
+              name    - first and last name
+              cellp   - cell phone number
+              homep   - home phone number
+              workp   - work phone number
+              workx   - work phone extention
+              email   - email address
 
-          examples:
-            addr update 'John Doe' 'homep:222-222-2222'
-                 - updates an existing contact named 'John Doe'
-            addr add {name: 'John Doe', cellp: '555-555-5555', email: 'user@domain.com'}''')
-  sys.exit()
+            examples:
+              addr update 'John Doe' 'homep:222-222-2222'
+                   - updates an existing contact named 'John Doe'
+              addr add {name:'John Doe', cellp:'555-555-5555', email:'user@domain.com'}
+                   - creates a new contact''')
+    sys.exit()
 
 def open_book():
-  if not os.path.isfile(path):
-    open(DEFAULT_PATH, 'w').close() # creates an addr_book file if one does not exist
+    if not os.path.isfile(DEFAULT_PATH):
+        open(DEFAULT_PATH, 'w').close() # creates an addr_book file if one does not exist
 
-  try:
-    contacts = []
-    with open(default_path) as f:
-      contacts = [build_contact(line) for line in f]
-  except OSError as err1:
-     print('Could not open \'addr_book\' at the default path')
-     sys.exit()
-  finally:
-     return contacts
+    with open(DEFAULT_PATH) as f:
+        contacts = [build_contact(line) for line in f]
 
-def print_book(contacts):
-  [print(j) for i,j in enumerate(contacts)]
-   
-#def search_book(contacts_list): 
-  #.isalpha(query.strip()) = Name search
-  #  .isdecimal(query.strip(-()) = Phone search
-  #  .isalnum(query.lower().strip()) = Email search
+    return contacts
 
-#def update_contact():
+def print_contact(query):
+    book = open_book()
+
+    if query == '*':
+      [contact.print() for contact in book]
+    else:
+        for contact in book:
+            if contact.name == 'query':
+                contact.print()
+     
+def update_contact(name, key, value):
+    book = open_book()
+
+    for contact in book:
+        if contact.name == key:
+            if key == 'name':
+                temp.name = value
+            elif key == 'homep':
+                temp.homep = value
+            elif key == 'cellp':
+                temp.cellp = value
+            elif key == 'workp':
+                temp.workp = value
+            elif key == 'emailp':
+              temp.email = value
+            elif key == 'emailw':
+              temp.emailw = value
+            else:
+                print('The key you privided "{}", is not a valid key.'.format(key))
+                get_help()
+        else:
+            print('There is no contact with the name {} in the address book'.format(name))
+            get_help()
+  
+    print('Contact updated, writing changes to address book')
+    write_book(book)
+    print('Done, exiting.')
+    del book, temp
+    sys.exit()
+
+def write_book(contacts):
+    shutil.copy2(DEFAULT_PATH, DEFAULT_BACKUP_PATH) # move original to backup file with metadata
+
+    with open(DEFAULT_PATH, 'w') as book:
+        book.write(contact.print_to_file() for contact in contacts) # write new file
+
+    sys.exit()
 
 def main():
-#  parser = argparse.ArgumentParser(description='Terminal application to keep track of a contact information')
-#parser.add_argument('--add', '-a', type=str, default=None, 
-#                      help='''Add a new contact to the addr_book file formated as a python dictionary
-#                               Must provide at least the name key''')
-#parser.add_argument('--delete', '-d', type=str, default=None, 
-#                       help='Delete a contact from the addr_book file')
-#parser.add_argument('--print', '-p', type=str, default='*',
-#                       help='Prints contact information for one or all of the contacts')
-#parser.add_argument('--update', '-u', type=str, default=None,
-#                       help='Updates an existing contact')
-#  parser.add_argument('--operation', '-o',
-#                       type=str, default='--help', nargs=2,
-#                       choices=['add', 'delete', 'print', 'update'],
-#                       help='The operation you would like to perform')
-#  parser.add_argument('--path', '-p',
-#                       type=str, default=DEFAULT_PATH,
-#                       help='The save file of the address book you would like to use')
-#  args = parser.parse_args()
-  print(type(sys.argv[0]))
-  print(sys.argv[0])
-  test = build_contact(line)
-  test.print()
+    if 3 > len(sys.argv):
+        get_help()
+   
+    if sys.argv[1] == 'add':
+      add_contact(line) # testing
+      add_contact(sys.argv[2])
+    elif sys.argv[1] == 'delete':
+      delete_contact(sys.argv[2])
+    elif sys.argv[1] == 'update':
+      update_contact(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == 'print':
+      print_contact(sys.argv[2])
+      sys.exit()
 
-  if argv[1] == 'add':
-    with open(DEFAULT_PATH, 'w+') as f:
-      f.write(build_contact(argv[2]))
-    del f
-    sys.exit()
-  if argv[1] == 'delete':
-    pass
-  if argv[1] == 'update':
-    pass
-  if argv[1] == 'delete':
-    pass
+    print('There seems to have been some sort of issue, you were never supposed to make it this far')
 
 
 # Statement to call the main function
 if __name__ == '__main__':
-  main()
+    main()
