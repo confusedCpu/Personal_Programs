@@ -40,22 +40,50 @@ class Contact:
                     (p) {4}
                     (w) {5}\n'''.format(self.name, self.homep, self.cellp, self.workp,
                                      self.emailp, self.eamilw))
+                    
 
 def build_contact(line): 
 # recieves a line uses regex to build key value pairs and return a dictionary with those values
-  copy = line
-  values_regex = re.compile(r'''(
-                                (?<=name:)[a-zA-Z\s]*          #contact name
-                                |(?<=homep:)[0-9\.\-\(\)x]*    #contact home phone
-                                |(?<=cellp:)[0-9\.\-\(\)x]*    #contact cell phone
-                                |(?<=workp:)[0-9\.\-\(\)x]*    #contact work phone
-                                |(?<=emailp:)[a-zA-Z0-9\@\._]* #contact personal email
-                                |(?<=emailw:)[a-zA-Z0-9\@\._]* #contact work email
-                                )''', flags=re.X)
-  keys_regex = re.compile(r'(name|cellp|workp|homep|emailp|emailw)')
+#  copy = line
+#  temp_contact = Contact()
+#  values_regex = re.compile(r'''(
+#                                (?<=name:)[a-zA-Z\s]*          #contact name
+#                                |(?<=homep:)[0-9\.\-\(\)x]*    #contact home phone
+#                                |(?<=cellp:)[0-9\.\-\(\)x]*    #contact cell phone
+#                                |(?<=workp:)[0-9\.\-\(\)x]*    #contact work phone
+#                                |(?<=emailp:)[a-zA-Z0-9\@\._]* #contact personal email
+#                                |(?<=emailw:)[a-zA-Z0-9\@\._]* #contact work email
+#                                )''', flags=re.X)
+#  keys_regex = re.compile(r'(name|cellp|workp|homep|emailp|emailw)')
 
-  values = re.findall(values_regex, copy)
-  return dict(zip(keys, values))
+#  values = re.findall(values_regex, copy)
+  
+  copy = line
+  name = re.findall(r'(?<=name:)[a-zA-Z\s]*', line)            #contact name
+  homep = re.findall(r'(?<=homep:)[0-9\.\-\(\)x]*', line)      #contact home phone
+  cellp = re.findall(r'(?<=cellp:)[0-9\.\-\(\)x]*', line)      #contact cell phone
+  workp = re.findall(r'(?<=workp:)[0-9\.\-\(\)x]*', line)      #contact work phone
+  emailp = re.findall(r'(?<=emailp:)[a-zA-Z0-9\@\._]*', line)  #contact personal email
+  emailw = re.findall(r'(?<=emailw:)[a-zA-Z0-9\@\._]*', line)  #contact work email
+  keys_regex = re.findall(r'(name|cellp|workp|homep|emailp|emailw)', line) # identify args provided
+  contacts = Contact()
+
+  if not name = None:
+    temp_contact.name = name
+  if homep not None:
+    temp_contact.homep = homep
+  if cellp not None:
+    temp_contact.cellp = cellp
+  if workp not None:
+    temp_contact.workp = workp
+  if emailp not None:
+    temp_contact.emailp = emailp
+  if emailw not None:
+    temp_contact.emailw = emailw
+
+  return contact
+
+  
 
 def get_help():
   print('''This is a simple application to keep track of contact information from the terminal
@@ -135,6 +163,8 @@ def main():
 #  args = parser.parse_args()
   print(type(sys.argv[0]))
   print(sys.argv[0])
+  test = build_contact(line)
+  test.print()
 
   if argv[1] == 'add':
     with open(DEFAULT_PATH, 'w+') as f:
@@ -142,11 +172,11 @@ def main():
     del f
     sys.exit()
   if argv[1] == 'delete':
-
+    pass
   if argv[1] == 'update':
-
+    pass
   if argv[1] == 'delete':
-
+    pass
 
 
 # Statement to call the main function
