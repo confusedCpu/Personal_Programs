@@ -31,8 +31,12 @@ class Contact:
 
     def __itter__(self):
        return self
+
+    def __str__(self):
+        print('name:{}, homep:{}, cellp:{}, workp:{}, emailp:{}, emailw:{}'
+                .format(self.name, self.homep, self.cellp, self.work, self.emailp, self.emailw))
   
-    def print(self):
+    def consol_print(self):
        print('''{0}
                    phone: 
                       (h) {1}
@@ -43,15 +47,16 @@ class Contact:
                       (w) {5}\n'''.format(self.name, self.homep, self.cellp, self.workp,
                                        self.emailp, self.emailw))
 
-    def print_to_file(self):
-        print('name:{}, homep:{}, cellp:{}, workp:{}, emailp:{}, emailw:{}'
-                .format(self.name, self.homep, self.cellp, self.work, self.emailp, self.emailw))
+    #def print_to_file(self):
 
 
 
 def add_contact(contact_line):
-    pass
-  
+    book = open_book()
+
+    book.append(str(build_contact(contact_line)))
+    write_book(book)
+
 def build_contact(line): 
     copy = line
     name = re.search(r'(?<=name:)[a-zA-Z\s]*', line)            #contact name
@@ -63,17 +68,17 @@ def build_contact(line):
     temp_contact = Contact()
 
     if name is not None:
-      temp_contact.name = str(name.group(0))
+        temp_contact.name = str(name.group(0))
     if homep is not None:
-      temp_contact.homep = str(homep.group(0))
+        temp_contact.homep = str(homep.group(0))
     if cellp is not None:
-      temp_contact.cellp = str(cellp.group(0))
+        temp_contact.cellp = str(cellp.group(0))
     if workp is not None:
-      temp_contact.workp = str(workp.group(0))
+        temp_contact.workp = str(workp.group(0))
     if emailp is not None:
-      temp_contact.emailp = str(emailp.group(0))
+        temp_contact.emailp = str(emailp.group(0))
     if emailw is not None:
-      temp_contact.emailw = str(emailw.group(0))
+        temp_contact.emailw = str(emailw.group(0))
 
     return temp_contact
 
@@ -126,17 +131,17 @@ def print_contact(query):
     book = open_book()
 
     if query == '*':
-      [contact.print() for contact in book]
+      [contact.consol_print() for contact in book]
     else:
         for contact in book:
             if contact.name == 'query':
-                contact.print()
+                contact.consol_print()
      
 def update_contact(name, key, value):
     book = open_book()
 
     for contact in book:
-        if contact.name == key:
+        if contact.name == name:
             if key == 'name':
                 temp.name = value
             elif key == 'homep':
@@ -146,15 +151,15 @@ def update_contact(name, key, value):
             elif key == 'workp':
                 temp.workp = value
             elif key == 'emailp':
-              temp.email = value
+                temp.emailp = value
             elif key == 'emailw':
-              temp.emailw = value
+                temp.emailw = value
             else:
                 print('The key you privided "{}", is not a valid key.'.format(key))
                 get_help()
         else:
             print('There is no contact with the name {} in the address book'.format(name))
-            get_help()
+            sys.exit()
   
     print('Contact updated, writing changes to address book')
     write_book(book)
@@ -175,16 +180,16 @@ def main():
         get_help()
    
     if sys.argv[1] == 'add':
-      add_contact(line) # testing
-      add_contact(sys.argv[2])
+        add_contact(line) # testing
+        add_contact(sys.argv[2])
     elif sys.argv[1] == 'delete':
-      delete_contact(sys.argv[2])
+        delete_contact(sys.argv[2])
     elif sys.argv[1] == 'update':
-      update_contact(sys.argv[2], sys.argv[3])
+        update_contact(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'print':
-      print_contact(sys.argv[2])
-      sys.exit()
-
+        print_contact(sys.argv[2])
+        sys.exit()
+    
     print('There seems to have been some sort of issue, you were never supposed to make it this far')
 
 
