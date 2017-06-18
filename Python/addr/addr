@@ -3,13 +3,9 @@
 # This is a simple application to keep track of contact information from the terminal
 
 ''' TODO
-  develop add_contact
-  develop delete_contact
-  develop search_book
-  develop update_contact
-  develop help function to explain cli syntax
-  debug *
-  rework open_book
+serialize object data instead of string translation
+use regex search for print and update
+encrypt addr_book and addr_book_backup and decrypt on read
 '''
 import os
 import re
@@ -17,26 +13,26 @@ import shutil
 import sys
 
 DEFAULT_PATH = os.path.join(os.path.expanduser('~'),  '.addr_book')
-DEFAULT_BACUP_PATH = os.path.join(os.path.expanduser('~'), '.addr_book_backup')
+DEFAULT_BACKUP_PATH = os.path.join(os.path.expanduser('~'), '.addr_book_backup')
 
 class Contact:
     def __init__(self, name='Unkown', homep='Unkown', cellp='Unkown', workp='Unkown',
                  emailp='Unkown', emailw='Unkown'):
-      self.name = name
-      self.homep = homep
-      self.cellp = cellp
-      self.workp = workp
-      self.emailp = emailp
-      self.emailw = emailw
+      self.name = str(name)
+      self.homep = str(homep)
+      self.cellp = str(cellp)
+      self.workp = str(workp)
+      self.emailp = str(emailp)
+      self.emailw = str(emailw)
 
     def __itter__(self):
        return self
 
     def __str__(self):
-        print('name:{}, homep:{}, cellp:{}, workp:{}, emailp:{}, emailw:{}'
-                .format(self.name, self.homep, self.cellp, self.work, self.emailp, self.emailw))
+        return 'name:{}, homep:{}, cellp:{}, workp:{}, emailp:{}, emailw:{}'.format(
+                self.name, self.homep, self.cellp, self.workp, self.emailp, self.emailw)
   
-    def consol_print(self):
+    def display(self):
        print('''{0}
                    phone: 
                       (h) {1}
@@ -47,14 +43,12 @@ class Contact:
                       (w) {5}\n'''.format(self.name, self.homep, self.cellp, self.workp,
                                        self.emailp, self.emailw))
 
-    #def print_to_file(self):
-
 
 
 def add_contact(contact_line):
     book = open_book()
 
-    book.append(str(build_contact(contact_line)))
+    book.append(build_contact(contact_line))
     write_book(book)
 
 def build_contact(line): 
@@ -82,26 +76,27 @@ def build_contact(line):
 
     return temp_contact
 
-  
+def delete_contact(name):
+    book = open_book()
+
+    for contact in book:
+        if contact.name == name:
+            book.remove(contact)
+
+    write_book(book)
+
 
 def get_help():
     print('''This is a simple application to keep track of contact information from the terminal
 
              format:
-               addr [arguments/function] [arguments]
+               addr function [keys] [values]
            
              funtions:
                add    - create new contact 
                delete - delete an existing contact
-               search - search and print saved contact information
+               print - search and print saved contact information
                update - update an existing contact
-                                                                                                                         
-            arguments (multi-word args must be passed in quotes):
-              name         - first name | last name | first + last
-              phone number - xxx-xxxx | xxx-xxx-xxxx | xxx xxxx | XXX XXXXxXXX               
-              email        - account@domain.com
-              {}          - new contact information
-              *            - selects all contacts
 
             contact keys (all string values):
               name    - first and last name
@@ -112,10 +107,18 @@ def get_help():
               email   - email address
 
             examples:
-              addr update 'John Doe' 'homep:222-222-2222'
-                   - updates an existing contact named 'John Doe'
               addr add {name:'John Doe', cellp:'555-555-5555', email:'user@domain.com'}
-                   - creates a new contact''')
+                   - creates a new contact
+
+              addr delete 'John Doe'
+                   - deletes John Doe's contact information
+
+              addr print 'John Doe'
+                   - prints John Doe's information
+
+              addr update 'John Doe' 'homep:222-222-2222'
+                   - updates an existing contact named 'John Doe'''')
+
     sys.exit()
 
 def open_book():
@@ -131,35 +134,33 @@ def print_contact(query):
     book = open_book()
 
     if query == '*':
-      [contact.consol_print() for contact in book]
+      [contact.display() for contact in book]
     else:
         for contact in book:
-            if contact.name == 'query':
-                contact.consol_print()
+            if contact.name == query:
+                contact.display()
      
 def update_contact(name, key, value):
     book = open_book()
 
     for contact in book:
+        print('{}'.format(contact.name))
         if contact.name == name:
             if key == 'name':
-                temp.name = value
+                contact.name = str(value)
             elif key == 'homep':
-                temp.homep = value
+                contact.homep = str(value)
             elif key == 'cellp':
-                temp.cellp = value
+                contact.cellp = str(value)
             elif key == 'workp':
-                temp.workp = value
+                contact.workp = str(value)
             elif key == 'emailp':
-                temp.emailp = value
+                contact.emailp = str(value)
             elif key == 'emailw':
-                temp.emailw = value
+                contact.emailw = str(value)
             else:
-                print('The key you privided "{}", is not a valid key.'.format(key))
+                print('The key you privided "{}", is not a valid key.'.format((str(key))))
                 get_help()
-        else:
-            print('There is no contact with the name {} in the address book'.format(name))
-            sys.exit()
   
     print('Contact updated, writing changes to address book')
     write_book(book)
@@ -171,7 +172,8 @@ def write_book(contacts):
     shutil.copy2(DEFAULT_PATH, DEFAULT_BACKUP_PATH) # move original to backup file with metadata
 
     with open(DEFAULT_PATH, 'w') as book:
-        book.write(contact.print_to_file() for contact in contacts) # write new file
+        for entry in contacts:
+            book.write('{}\n'.format(str(entry)))
 
     sys.exit()
 
@@ -180,14 +182,13 @@ def main():
         get_help()
    
     if sys.argv[1] == 'add':
-        add_contact(line) # testing
-        add_contact(sys.argv[2])
+        add_contact(str(sys.argv[2]))
     elif sys.argv[1] == 'delete':
-        delete_contact(sys.argv[2])
+        delete_contact(str(sys.argv[2]))
     elif sys.argv[1] == 'update':
-        update_contact(sys.argv[2], sys.argv[3])
+        update_contact(str(sys.argv[2]), str(sys.argv[3]), str(sys.argv[4]))
     elif sys.argv[1] == 'print':
-        print_contact(sys.argv[2])
+        print_contact(str(sys.argv[2]))
         sys.exit()
     
     print('There seems to have been some sort of issue, you were never supposed to make it this far')
