@@ -28,3 +28,4 @@ This is a simple application to keep track of contact information from the termi
                addr update 'John Doe' - updates an existing contact named 'John Doe'
                addr add {name: 'John Doe', cellp: '555-555-5555', email: 'user@domain.com'}
 
+Version 1.0
