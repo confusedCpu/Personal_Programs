@@ -1,0 +1,53 @@
+#!/bin/bash
+# This script is used to make a boot-able GNU/Linux flash drive. First parameter is the disk image
+#   the second is the device to write to
+
+IMAGE=$1
+DISK=$2
+
+echo -e "\nThis script must be ran as root or a sudoer. If improperly used data \ncorruption or loss will be the result. In the event that you are uncomfortable \nusing or do not understand the purpose of this script, close it, and talk to your \nsystem administrator.\n\n" 
+
+if [[ -f ${DISK} ]]; then
+	echo "The disk identifier you provided does not exist, make sure the drive is correct."
+	echo "You provided: $DISK"
+	exit
+elif ! [[ -f ${IMAGE} ]]; then
+	echo "The image path does not exist, make sure the file is present."
+	echo "You provided: $IMAGE"
+	exit
+fi
+
+echo "Do you need to edit the partition table on $DISK first? Changes made will be perminent."
+read -p 'Response[y/N]:' RESPONSE
+
+if [[ $RESPONSE == "y" || $RESPONSE == "Y" ]]; then
+	echo -e "\nDropping you into 'fdisk'."
+	sudo fdisk $DISK
+fi
+
+echo -e "\n\nAre you sure you want to write \n\t$IMAGE -> $DISK,\nthis will erase all data on the disk."
+read -p 'Response[y/N]:' RESPONSE
+echo
+
+if [[ $RESPONSE == 'y' || $RESPONSE == 'Y' ]]; then
+	sudo sh -e {dd status=progress if=$IMAGE of=$DISK bs=1M 1>&1}
+	sync
+else
+	echo -e "\nExiting"
+	exit
+fi
+
+echo -e "The image has been written to disk. Printing new disk information.\n"
+sudo fdisk -l | grep $DISK
+
+echo
+read -p "Do you need to unmount $DISK[y/N]: " RESPONSE
+
+if [[ $RESPONSE == 'y' || $RESPONSE == 'Y' ]]; then
+	sudo umount $DISK
+	echo -e "\n$DISK has been written and unmounted, \nExiting!"
+	exit
+else
+	echo -e "\n$DISK has been written, \nExiting!"
+fi
+
