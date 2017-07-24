@@ -30,7 +30,7 @@ read -p 'Response[y/N]:' RESPONSE
 echo
 
 if [[ $RESPONSE == 'y' || $RESPONSE == 'Y' ]]; then
-	sudo sh -e {dd status=progress if=$IMAGE of=$DISK bs=1M 1>&1}
+	sudo dd status=progress if=$IMAGE of=$DISK bs=1M 1>&1
 	sync
 else
 	echo -e "\nExiting"
