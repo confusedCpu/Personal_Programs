@@ -13,7 +13,7 @@ $LOG = "c:\SETUP_LOG.txt"
 $INSTALLERS = "c:\Installers"
 
 $NAME = (Get-WmiObject Win32_ComputerSystem).Name
-$DOMAIN_NAME = "RAMS.adp.vcu.edu"
+$DOMAIN_NAME = "Some.Domain"
 
 # [ functions ] 
 
