@@ -14,7 +14,7 @@ $PENDING = "c:\Pending_Installs"
 $INSTALLED = "c:\Installed"
 
 $NAME = (Get-WmiObject Win32_ComputerSystem).Name
-$DOMAIN_NAME = "RAMS.adp.vcu.edu"
+$DOMAIN_NAME = "Some.Domain"
 
 # [ functions ] 
 
