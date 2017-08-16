@@ -1,0 +1,151 @@
+#!/bin/bash
+# CNC - clean and copy
+# Cleans user profile data then transferes it to a remote location specified
+
+
+# [ Global Variables ]
+
+source_dir=$1
+destination_dir=$2
+cnc_dirs=( "Desktop" "Documents" "Library" "Pictures" "Movies" "Music" "Videos" )
+
+default_source_dir=''
+default_destination_dir=''
+
+log_dir="${destination_dir}\/Logs"
+log_file="${log_dir}\/CNC.log"
+
+
+# [ Functions ] 
+
+function clean( ) {
+# calls clamscan to clean a specified directory
+
+    local target_dir=$1
+
+    check_permissions $target_dir                               # verify read/write on the directory
+    
+    if ! ( $? -eq 0 ); then
+        log "ERROR" "An error occured before ${target_dir} could be cleaned"
+        exit 1
+    fi
+
+    clamscan --infected --allmatch --recursive --remove=yes \   # scan the directory 
+        --log="${log_dir}\/CLAMSCAN_${target_dir}.log" $target_dir
+
+    if ! ( $? -eq 0 ); then                                     # log error and break out
+        log "ERROR" "Failed to clean ${target_dir} see ${log_dir}\/CLAMSCAN.log, skipping."
+        exit 1
+    fi
+
+    log "PASS" "Successfully cleaned ${target_dir}."
+}
+
+
+function check_permissions( ) {
+# verify read and write permissions for a specified directory by creating a dummy file
+
+    local target_dir=$1
+
+    touch $target_dir/test_file
+
+    if ! ( $? -eq 0 ); then
+        log "ERROR" "There is an issue with the read write permissions on ${target_dir}."
+        exit 1
+    fi
+
+    log "PASS" "Read write permissions on ${target_dir} verified."
+    rm $target_dir/test_file
+}
+
+
+function copy( ) {
+# verifies the source and destination, then calls rsync to transfer data
+
+    local source_dir=$1 
+    local destination_dir=$2
+
+    if ! ( -d $source_dir ); then
+        $source_dir=$default_source
+    fi
+
+    if ! ( -d $destination_dir ); then
+        $destination_dir=$default_destination
+    fi
+
+    check_permissions $destination_dir
+
+    if ! ( $? -eq 0 ); then
+        log "ERROR" "An error occured before ${source_dir} could be transfered,\
+            due to write permissions on ${destination_dir}"
+        exit 1
+    fi
+
+    rsync --recursive --update --times --human-readable --progress \
+        --log-file="${log_dir}\/RSYNC_${source_dir}.log" $source_dir $destination_dir
+
+    if ! ( $? -eq 0 ); then
+        log "ERROR" "Failed to transfer ${source_dir} to ${destination_dir}, \
+           see ${log_dir}\/RSYNC.log for more detail, skipping."
+        exit 1
+    fi
+
+    log "PASS" "Sucessfully transfered ${source_dir} to ${destination_dir}"
+}
+
+
+function log( ) {
+# timestamp and record events in the program
+
+    local log_type=$1
+    local log_message=$2
+
+    echo "$( date +%R ): [${log_type}]\n\t${log_message}" >> $log_file
+    echo "[${log_type}] $log_message"
+    
+    if ! ( $? -eq 0 ); then
+        echo "There was an issue logging an error"
+        exit 1
+    fi
+}
+
+
+function new_clam( ) { 
+# updates clamav virus definitions
+
+    freshclam --log="${log_dir}\/FRESHCLAM.log" --verbose
+
+    if ! ( $? -eq 0 ); then
+        log "ERROR" "An error occured updating the ClamAV virus definitions \
+            see ${log_dir}\/FRESHCLAM.log for more details"
+        exit 1
+    fi
+
+    log "PASS" "ClamAV virus definitions updated successfully."
+}
+
+
+# [ Main ]
+
+for directories in $cnc_dirs; do
+
+    if ! ( -d $directories ); then
+        log "WARNING" "${directories} does not exist, skipping"
+        break
+    fi
+
+    clean $directories
+    if ! ( $? -eq 0 ); then
+        break
+    fi
+
+    copy $directories
+    if ! ( $? -eq 0 ); then
+        break
+    fi
+
+    log "PASS" "${directories} was processed without error"
+
+done
+
+log "PASS" "Script exiting" 
