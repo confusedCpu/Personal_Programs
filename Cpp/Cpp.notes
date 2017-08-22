@@ -1,0 +1,198 @@
+C++ Notes
+*********************
+
+declaration statements - int x;
+ assignment statements - x = 5;
+     output statements - std::cout << x;
+            expression - x = 2 + 3;
+              function - collection of statements that executes sequentially.
+               library - a collection of precompiled code that has been packaged
+                         for reuse in different programs
+                object - a piece of memory that can be used to store values
+              variable - an object with a name
+              l-values - a value that has an address in memory ( found on the left side in an assignment )
+              r-values - any value that can be assigned to an l-value ( found on the right side of an assingment )
+            definition - allocating a portion of memory for a variable
+            assignment - placing a value in a variables memory address
+         initalization`- defining and assigning a value to a variable at the same time
+
+
+*** C/C++ does not initialize variables with a default value, so it will be what ever is already in that address ***
+
+
+Sample Program - Hello World!
+*********************
+
+/*
+ * This is multi-lined comments
+ */
+
+#include <iostream>     // this is a preprocessor directive
+
+using namespace std;    // removes the need to type std::cout etc.
+
+int two_plus_two()
+{
+    return 2 + 2;
+}
+
+int main()
+{
+    cout << "Hello, World!";
+    two_plus_two();
+    return 0;
+}
+
+
+
+Cout, Cin, and Endl
+*********************
+
+Found in iostream library 
+#include <iostream>;
+
+cout -  Print to the console
+        std::cout << "Hello, World!";
+
+ cin -  Read in from the console and assign to a variable
+        std::cin >> x; 
+
+endl -  Insert a new line char
+        std::cout << "This is on one line"" << std::endl << "This is on another";
+
+
+Variables and Data Types
+*********************
+
+const           - value can not be changed. Constant variable names are in all caps
+
+double
+
+char
+
+bool            - true | false
+
+int             - 2147483648 is the largest int
+
+float
+
+double          - 15 digit accuracy
+
+*** Other Types
+
+short int       - 16 bit int
+
+long int        - 32 bit int
+
+long long int   - 64 bit int
+
+long double     - not less than double
+
+
+Comparison and Logical Operators
+*********************
+
+
+Comparison Operators:
+    
+    ==, !=, <, >, <=, >=
+
+Logical Operators:
+    
+    ||, &&, !
+
+
+If Statements
+*********************
+
+if( Condition ) {
+
+    do_something();
+
+} else if( ! Something Else ) {
+
+    do_something_else();
+
+} else {
+
+    panic();
+}
+
+
+Switch Statements
+*********************
+
+
+switch( some_variable ){
+
+    case 1:
+        do_something();
+        // exits the switch
+        break;
+
+    case 2:
+        do_something_else();
+        break;
+    
+    default:
+        panic();
+}
+
+
+Ternary Operator
+*********************
+
+Assigns a value based on a condition
+
+variable = (condition) ? value_if_true : value_if_false
+
+
+Arrays
+*********************
+
+
+data_type array_name[size];
+
+data_type array_name[5] = { 1, 2, 3, 4, 5 };
+
+char myName[4][5] = {{'a', 'l', 'e', 'x'},
+                    {'m', 'a', 'r', 't', 'i', 'n'}}
+
+
+For Loops
+*********************
+
+
+for( int i = 1; i <= 10; i++ ){
+
+    some_code();
+
+}
+
+for( int j = 0; j < 4; j++ ){
+
+    for( int k = 0; k < 5; k++){
+
+        std::cout << myName[j][k] << std::endl;
+    }
+}
+
+
+While Loops
+*********************
+
+
+while( Condition ){
+
+    do_this();
+}
+
+
+Do While Loops
+*********************
+
+do {
+
+    do_something();
+
+} while( Condition );

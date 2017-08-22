@@ -117,7 +117,7 @@ def get_help():
                    - prints John Doe's information
 
               addr update 'John Doe' 'homep:222-222-2222'
-                   - updates an existing contact named 'John Doe'''')
+                   - updates an existing contact named 'John Doe' ''')
 
     sys.exit()
 

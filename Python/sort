@@ -1,0 +1,32 @@
+#!/bin/python3
+# sortdir.py
+# 
+# This program will sort files in a directory or give you usefull information about the types of files 
+
+
+import os, re, shutil, zipfile
+
+def sort_by_type( dir, zip ):
+	type_re = re.compile(r'(?<=.)*$') 
+	type_list = [] 
+
+	if os.path.isdir( dir ):
+	    for file in os.listdir( dir ):
+	        type = re.search( file, type_re )
+	             		
+	    	if type in type_list:
+		    shutil.move( file, os.path.join( '.', type ))
+		else:
+                    os.mkdir( type )
+                    shutil.move( file, os.path.join( '.', type ))
+                    type_list.add( type )
+
+
+def summary( dir, list ):
+    print( "***Summary*** \nFile Types: {} \n\nType | Count".format( len( list ) )) 
+    for type in type_list:
+        print( '{} : {}'.format( type, len( os.listdir( os.path.join( dir, type )))))
+
+
+def main(): 
+    pass

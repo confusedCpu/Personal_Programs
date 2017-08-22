@@ -16,11 +16,11 @@ else
 fi
 
 # Copy all dot files to ~/ 
-cp -ruv <(ls | grep -e [[^".git"]] | cat) $HOME/
+cp -ruv <(ls | grep -e [[^".git"]]) $HOME/
 echo All \'.\' files have been pushed to $HOME.
 
 # Dump every thing else into ~/.config
-cp -r <(ls | egrep -E [[:alpha:]] | cat) $HOME/.config/
+cp -r <(ls | egrep -E [[:alpha:]]) $HOME/.config/
 echo Everything else is in $HOME/.config.
 
 echo Done.
