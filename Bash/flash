@@ -31,6 +31,7 @@ echo
 
 if [[ $RESPONSE == 'y' || $RESPONSE == 'Y' ]]; then
 	sudo dd status=progress if=$IMAGE of=$DISK bs=1M 1>&1
+    echo "\n\nSyncing disks now..."
 	sync
 else
 	echo -e "\nExiting"
