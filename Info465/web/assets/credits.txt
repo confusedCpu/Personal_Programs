@@ -1,0 +1,6 @@
+Credits for the images used in this project:
+
+                       logo.png - /u/navidj https://i.redd.it/4btg9peappiz.jpg
+    fedora_26_available_now.jpg - https://fedoramagazine.org/wp-content/uploads/2017/07/fedora26-945x400.jpg
+                  feel-free.jpg - http://linge-ma.ws/wp-content/uploads/2013/02/linux-ubuntu-free-debian-arch-linux-1680x1050-wallpaper_www.wall321.com_5-800x400.jpg
+                centos-logo.png - https://hostingwikipedia.com/wp-content/uploads/2016/04/feature2.png
