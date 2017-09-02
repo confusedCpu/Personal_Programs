@@ -2,11 +2,6 @@
 # addr.py
 # This is a simple application to keep track of contact information from the terminal
 
-''' TODO
-serialize object data instead of string translation
-use regex search for print and update
-encrypt addr_book and addr_book_backup and decrypt on read
-'''
 import os
 import re
 import shutil

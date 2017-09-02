@@ -47,10 +47,13 @@ def make_dirs( type_list, target_dir ):
             
             except OSError as error:
                 print( '[ERROR] Failed to make {}/{}:    {}'.format( target_dir, types, str( error )))
-    #  end make_dirs
+                print( '** Skipping..' )
+                continue
+
+#  end make_dirs
 
 
-# moves files into the appropriate directory
+# move files into their appropriate directory
 def move_files( type_list, target_dir ):
 
     re_template = r'\w+\.{}$'
@@ -76,6 +79,7 @@ def move_files( type_list, target_dir ):
                 print( '**' )
 
     # end move_files
+
 
 # prints a summary of the folders made and the number of files contained within each
 def summary( type_list, target_dir ):
