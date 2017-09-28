@@ -106,7 +106,68 @@
     int main()
     {
         int myNumbers[10];
+        int numEntered = getNums(myNumbers);
 
+        return numEntered;
+    }
+
+    getNums(int numArray[])
+    {
+        int i = 0;
+        char answer;
+        do
+        {
+            cout << "enter number : " ;
+            cin >> numArray[i];
+            i++;
+            cout << "another? Enter C to Continue " ;
+            cin >> answer;
+            
+        } while ((answer == 'C' || answer == 'c') && i < MAXENTRY);
+        return i;
+    }
+
+    /* Array of Objects
+     * 
+     * declaration  -   myClass arrayOfmyClass[5];
+     *
+     * access public members    -   arrayOfmyClass[i].increment();
+     */
+
+    class myClass
+    {
+        public:
+            char fName[];
+            char lName[];
+            myClass()
+            {
+                fName = "alex\0";
+                lName = "martin\0";
+            }
+            void getFirst
+            {
+                cout << fName << endl;
+            }
+            void getLast
+            {
+                cout << lName << endl;
+            }
+            ~myClass()
+            {
+                cout << "deleted " << endl;
+            }
+    };
+
+    int main() {
+
+        myClass arrayOfmyClass[5];
+
+        for( int i = 0; i < 5; i++)
+        {
+            cout << arrayOfmyClass[i].getFirst() << " " 
+                 << arrayOfmyClass[i].getLast() << endl;
+        }
+    }
 
 
 //[strings]
@@ -245,6 +306,35 @@
     void getDemensions( int *l, int *w ); 
 
 
+    /* Overloading
+     *
+     * functions can have the same name as long as the parameters are different
+     * function overloading is used to represent real-world objects in programming
+     * it allows sets of functions to be accessed using a common name and is one
+     * way c++ achieves polymorphism
+     */
+
+    int myFunc( int a, int b, int c )
+    {
+        return a + b + c;
+    }
+
+    int myFunc ( double a, double b )
+    {
+        return a * b;
+    }
+    {
+
+    /* Overloading and Ambiguity
+     *
+     * In some situations the compiler is unable to choose between two or more 
+     * correctly overloaded functions.  This is due to C++’s automatic type 
+     * conversions. C++ automatically attempts to convert the type of arguments 
+     * used to call a function into the type of parameters defined by the 
+     * function, sometimes causing ambiguity.
+     */
+
+
 //[variable scope]
 
     /* storage classes can be permanent or temporary
@@ -272,5 +362,199 @@
     }
 
 
+//[main()]
 
+    /* Arguments to main()
+     *
+     * General convention is to use argc and argv parameters
+     *
+     * int argc     -   holds the number of arguments on the command line. #1 is 
+     *                  the program name
+     * char *argv[] -   a pointer to an array of character pointers where each 
+     *                  pointer in the array points to a string containing the
+     *                  command line arguments
+     */
+
+    int main ( int argc, char *argv[] )
+    {
+        if( argc < 2 )
+        {
+            cout << "Error! your forgot a cli variable!" << endl;
+            return 1;
+        }
+        else
+            return 0;
+    }
+
+
+//[class, object]
+
+    /* class    -   expanded concept of data structures. Like data structures, 
+     *              they can contian functions as members
+     * object   -   an instantiation of a class. In terms of variables, a class
+     *              would be the type, and an object would be the variable
+     *
+     * class <class name>
+     * {
+     *     <access specifier>:
+     *         member1;
+     *     <access specifier 2>:
+     *         member2;
+     * };
+     *
+     * members  -   can be either data or function declarations and optionally
+     *              access specifiers
+     * access specifier -   The {private,public,protected} specifiers modify
+     *                      the access rights for the members that follow them
+     * private          -   members of a class are accessible only from within
+     *                      other members of the same class
+     * protected        -   members are accessible from other members of the 
+     *                      same class, but also from members of their derived
+     *                      classes
+     * public           -   members are accessible from anywhere the object is 
+     *                      visible
+     */
+
+    class foo
+    {
+        private:
+            int data;
+        public:
+            void memfunc ( int d )
+            {
+                data = d;
+            }
+    };
+             
+    class smallObject
+    {
+        int data1;
+        double data2;
+        public:
+            // member function to set data
+            void setData(int d1, double d2)
+            {
+                data1 = d1;
+                data2 = d2;
+            };
+
+            // member function to display data
+            void displayData()
+            {
+                cout << data1 << endl;
+                cout << data2 << endl;
+            };
+     };
+
+    int main()
+    {
+        smallObject myObject;  // declare object
+        myObject.setData(123, 56700);  // call member function to set data
+        myObject.displayData();   // call member function to display data
+
+        return 0;
+    }
+
+    /* Constructors and Destructors
+     *
+     * constructor  -   a special member function that is executed automatically
+     *                  whenever an object is created. Its purpose is autmatic
+     *                  initalization.
+     *
+     *                  1. it has the same name as the class
+     *                  2. no return type for constructors
+     *                  3. can be overloaded
+     *                  4. may or may not have arguments
+     *
+     * destructor   -   a special member function that is executed automatically
+     *                  whenever an object is destroyed
+     *
+     *                  1. same name as the class w/ a ~ prefix ( ~myClass() )
+     *                  2. has no return type
+     *                  3. commonly used to deallocate memory that was allocated
+     *                     by the constructor
+     *                  4. takes no arguments
+     */
+
+    class Counter
+    {
+        private:
+            int count;
+
+        public:
+            counter()
+            {
+                count = 0;
+            }
+            void increment()
+            {
+                count++
+            }
+            void getCount()
+            {
+                return count;
+            }
+            ~counter()
+            {
+                cout << "destroying.." << endl;
+            }
+    };
+
+    int main()
+    {
+        counter a, b;
+        a.increment();
+        a.increment();
+        b.increment();
+        cout << a.getCount() << " " << b.getCount() << endl;
+
+        return 0;
+    }
+
+    // or you can declare your variables outside of the class
+    
+    class Counter
+    {
+        private:
+            int count;
+        public:
+            counter();
+            void increment();
+            int getCount();
+            ~counter();
+    };
+
+    counter::counter()
+    {
+        count = 0;
+    }
+    // overloaded constructor
+    counter::counter(int value)
+    {
+        count = c;
+    }
+    void counter::increment()
+    {
+        count++;
+    }
+    int counter::getCount()
+    {
+        return count;
+    }
+    counter::~counter()
+    {
+        cout << "destroying.." << endl;
+    }
+
+    int main()
+    {
+        counter a, b;
+        a.increment();
+        a.increment();
+        b.increment();
+        cout << a.getCount() << " " << b.getCount() << endl;
+
+        return 0;
+    }
+    
 
