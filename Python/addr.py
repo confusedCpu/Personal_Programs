@@ -1,4 +1,4 @@
-#!/usr/bin/python3 
+#!/usr/bin/python3
 # addr.py
 # This is a simple application to keep track of contact information from the terminal
 
@@ -26,10 +26,10 @@ class Contact:
     def __str__(self):
         return 'name:{}, homep:{}, cellp:{}, workp:{}, emailp:{}, emailw:{}'.format(
                 self.name, self.homep, self.cellp, self.workp, self.emailp, self.emailw)
-  
+
     def display(self):
        print('''{0}
-                   phone: 
+                   phone:
                       (h) {1}
                       (c) {2}
                       (w) {3}
@@ -46,7 +46,7 @@ def add_contact(contact_line):
     book.append(build_contact(contact_line))
     write_book(book)
 
-def build_contact(line): 
+def build_contact(line):
     copy = line
     name = re.search(r'(?<=name:)[a-zA-Z\s]*', line)            #contact name
     homep = re.search(r'(?<=homep:)[0-9\.\-\(\)x]*', line)      #contact home phone
@@ -86,9 +86,9 @@ def get_help():
 
              format:
                addr function [keys] [values]
-           
+
              funtions:
-               add    - create new contact 
+               add    - create new contact
                delete - delete an existing contact
                print - search and print saved contact information
                update - update an existing contact
@@ -134,7 +134,7 @@ def print_contact(query):
         for contact in book:
             if contact.name == query:
                 contact.display()
-     
+
 def update_contact(name, key, value):
     book = open_book()
 
@@ -156,7 +156,7 @@ def update_contact(name, key, value):
             else:
                 print('The key you privided "{}", is not a valid key.'.format((str(key))))
                 get_help()
-  
+
     print('Contact updated, writing changes to address book')
     write_book(book)
     print('Done, exiting.')
@@ -175,7 +175,7 @@ def write_book(contacts):
 def main():
     if 3 > len(sys.argv):
         get_help()
-   
+
     if sys.argv[1] == 'add':
         add_contact(str(sys.argv[2]))
     elif sys.argv[1] == 'delete':
@@ -185,7 +185,7 @@ def main():
     elif sys.argv[1] == 'print':
         print_contact(str(sys.argv[2]))
         sys.exit()
-    
+
     print('There seems to have been some sort of issue, you were never supposed to make it this far')
 
 

@@ -1,8 +1,8 @@
-#!/bin/python3
+#!/usr/bin/python3
 # sortdir.py
-# 
-# This program will sort files in a directory or give you usefull information 
-# about the types of files 
+#
+# This program will sort files in a directory or give you usefull information
+# about the types of files
 
 
 import os
@@ -17,7 +17,7 @@ def gen_file_types( directory ):
     types_re   = re.compile( r'(?<=\.)\w+$' )
 
     for files in os.listdir( directory ):
-        
+
         match = re.search( types_re, files )
 
         if match not None:
@@ -44,7 +44,7 @@ def make_dirs( type_list, target_dir ):
             try:
                 os.mkdir( os.path.join( target_dir, types ))
                 print( '** {} directory created.'.format( types ))
-            
+
             except OSError as error:
                 print( '[ERROR] Failed to make {}/{}:    {}'.format( target_dir, types, str( error )))
                 print( '** Skipping..' )
@@ -57,13 +57,13 @@ def make_dirs( type_list, target_dir ):
 def move_files( type_list, target_dir ):
 
     re_template = r'\w+\.{}$'
- 
+
     for types in type_list:
-        
+
         types_re = re.compile( re_template.format( types ))
 
         for files in os.listdir( target_dir ):
-            
+
             if re.match( types_re ) not None:
                 try:
                     print( '** Moving {}  -->  {}/{}'.format( files, target_dir, types))
@@ -71,7 +71,7 @@ def move_files( type_list, target_dir ):
 
                 except OSError as error:
                     print( '[ERROR] Moving {}  -->  {}/{}:    {}'.format( files, target_dir, str( error )))
-                
+
                 finally:
                     print( '**' )
 
@@ -93,9 +93,9 @@ def summary( type_list, target_dir ):
 
     for i in { 0..len( type_list ) }:
         print( "** {} : {}".format( type_list[i], len( os.listdir(os.build.path( target_dir, type_list[i] ))))
-    
+
     # end summary
-        
+
 # confirms that the user has read and write permissions on the directory
 def verify_permissions( target_dir ):
 
