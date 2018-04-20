@@ -39,7 +39,6 @@ class Contact:
                                        self.emailp, self.emailw))
 
 
-
 def add_contact(contact_line):
     book = open_book()
 

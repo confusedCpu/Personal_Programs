@@ -91,6 +91,7 @@ copy ( ) {
 
 log ( ) {
 # timestamp and record events in the program
+#TODO re-write this with printf and a log file
 
     local log_type=$1
     local log_message=$2
