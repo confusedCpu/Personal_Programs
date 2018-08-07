@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+################################################################################
+### grive2_install
+### A build script for griv2 on Fedora 28
+################################################################################
+
+requires=(git cmake libgcrypt-devel g++ libstdc++ yajl-devel boost libcurl-devel expat-devel binutils zlib)
+
+repo="https://github.com/vitalif/grive2.git"
+grive2_dir=/tmp/grive2
+
+# install required software
+sudo dnf -y install "${requires[@]}"
+
+# clone the repo and create the build dir
+git clone $repo $grive2_dir
+mkdir $grive2_dir/build
+
+# build grive2 and install
+cd $grive2_dir/build
+cmake ../
+make -j4
+sudo make install
+
+
+
