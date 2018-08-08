@@ -45,7 +45,7 @@ def notify2(name: str, var1: str, var2: str, action: str):
         # icon path
         "stuff",
     ).show()
-    print("** NOTIFY2: {}".format(summary, body))
+    print("** NOTIFY2: {} - {}".format(summary, body))
 
 
 # handle disk events

@@ -1,0 +1,202 @@
+#!/usr/bin/python3
+################################################################################
+# syncgrive
+#
+# This script monitors a directory and syncs it with google drive if a change
+# is detected. The script relies on the DRIVE environment editor being set to
+# the directory you wish to keep synced
+#
+# The GDRIVES variable should be like bellow with a ';' seperating drive paths
+# in your bashrc
+#
+#   GDRIVES="${HOME}/WorkDrive;${HOME}/PersonalDrive" ; export DRIVE
+#
+# python depends: inotify-tools, pgi, python-systemd
+# external depends: grive2(c++, github)
+################################################################################
+
+################################################################################
+# TODO
+#   support more than one drive
+#   add support for systemd logging
+#   add yaml config file support
+#   remove grive2 depends and reimplement with drive REST API
+################################################################################
+
+# To watch the dir where google drive is mounted
+from inotify.adapters import Inotify
+# To get the $DRIVE env variable
+from os import getenv
+# To call grive to sync the share
+from subprocess import run
+# To exit early if not configured correctly
+from sys import exit
+# To sleep
+from time import sleep
+
+# To send notifications
+try:
+    import gi
+    gi.require_version('Notify', '0.7')
+    from gi.repository import Notify
+except:
+    # TODO systemd logging
+    # TODO Disable notifications if failed
+    print("** Failed to load Notify")
+
+# checks to see if there is a network connection and a drive share mounted
+# def is_alive(path: str) -> bool
+
+
+def detect_changes(path: str) -> (int, int, int):
+    watcher: Inotify = Inotify()
+    watcher.add_watch(path)
+
+    # stats
+    created, deleted, written = 0, 0, 0
+
+    # poll events
+    for event in watcher.event_gen(timeout_s=10, yield_nones=False):
+        (_, types, _, _) = event
+
+        if 'IN_CLOSE_WRITE' in types:
+            print("** Write event")
+            written += 1
+        if 'IN_CREATE' in types:
+            print("** Create event")
+            created += 1
+        if 'IN_DELETE' in types:
+            print("** Delete event")
+            deleted += 1
+
+    # format relevant stats
+    return "{}{}{}".format(
+        "{} ".format(created) if created != 0 else "",
+        "{} ".format(deleted) if deleted != 0 else "",
+        "{}".format(written) if written != 0 else ""
+    )
+
+# end detect_changes
+
+
+# send desktop notifications on drive changes
+# TODO tie in systemd logging
+def change_notify(drive: str, msg: str, icon: str):
+    Notify.init('syncgdrive')
+
+    Notify.Notification.new(
+        "{}: Change Detected ",
+        msg,
+        icon
+    ).show()
+
+# end change_notify
+
+
+# send desktop notifications on drive syncs
+# TODO tie in systemd logging
+def sync_notify(drive: str, icon: str):
+    Notify.init('syncgdrive')
+
+    Notify.Notification.new(
+        "{}: Synced".format(drive),
+        "",
+        icon
+    ).show()
+
+# end sync_notify
+
+
+# detects local changes in a google drive share
+def poll(path: str) -> str:
+    watcher: Inotify = Inotify()
+    watcher.add_watch(path)
+
+    # stats
+    created: int = 0
+    deleted: int = 0
+    written: int = 0
+
+    events = list(watcher.event_gen())
+    # for event in watcher.event_gen(yield_nones=False):
+    if events != None:
+        for event in events:
+            print("Stating poll loop")
+            (_, type_names, _, _) = event
+            if 'IN_CLOSE_WRITE' in type_names:
+                print("** Write event")
+                written += 1
+            if 'IN_CREATE' in type_names:
+                print("** Create event")
+                created += 1
+            if 'IN_DELETE' in type_names:
+                print("** Delete event")
+                deleted += 1
+
+    print("** Message: {}".format(msg))
+    return msg
+
+# end poll
+
+
+def main():
+
+    # Get the $DRIVE env var and exit early if a google drive share is not found
+    paths: str = getenv('GDRIVES', '')
+    if paths == "":
+        # TODO add systemd logging here
+        exit(
+            "ERROR: No Google Drive directory detected. The GDRIVES environment variable may not be set."
+        )
+    else:
+        paths = paths.split(';')
+
+    # Keeps track of the number of cycles and syncs after a duration
+    # TODO make these a config file arg
+    sync_count: int = 5
+    sleep_dur: int = 3
+    icon_path: str = ""
+
+    count: int = 0
+    Notify.init('syncgrive')
+
+    while True:
+        print("** Top of loop")
+        # sync remote
+        if sync_count == count:
+            print("** Remote Sync")
+            count = 0
+        else:
+            # sync local
+            for path in paths:
+                print("** Checking for events in {}".format(path))
+                # poll for events
+                msg = poll(path)
+
+                if msg != "":
+                    print("** Events found; creating notifications")
+                    Notify.Notification.new(
+                        "{} has been modified. Sync in {} seconds".format(
+                            path.basename(), sleep_dur),
+                        msg,
+                        icon_path
+                    ).show()
+
+                    # sleep(sleep_dur)
+
+                    # TODO systemd logging and error handeling
+                    print("** Syncing now")
+                    run(['grive', '--path {}'.format(path)])
+                else:
+                    print("** No events found")
+
+        # sleep before next polling cycle
+        print("** Sleeping for {}".format(sleep_dur))
+        count += 1
+        # sleep(sleep_dur)
+
+# end main
+
+
+if __name__ == "__main__":
+    main()
